@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Productos · Big5hats</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo">
+      <span class="logo-icon">B5</span>
+      <span class="logo-text">Big5hats</span>
+    </div>
+
+    <nav class="navbar">
+      <a href="index.html">Inicio</a>
+      <a href="categorias.html">Categorías</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="contacto.html">Contáctanos</a>
+    </nav>
+
+    <a class="pill-button" href="login.html">Entrar</a>
+  </header>
+
+  <main>
+    <section class="page">
+      <div class="section-header">
+        <p class="section-kicker">Catálogo</p>
+        <h2 id="catalogTitle">Todos los productos</h2>
+        <p class="section-subtext">Explora los productos disponibles. Usa los enlaces desde las categorías o filtra por URL con <code>?categoria=nombre</code>.</p>
+      </div>
+
+      <div class="products-container">
+        <div class="sort-dropdown-wrapper">
+          <label for="sortSelect" style="color:var(--muted);font-weight:700;font-size:14px;">Ordenar:</label>
+          <div class="custom-select-wrapper">
+            <button id="sortSelect" class="custom-select-button" aria-haspopup="listbox">
+              <span id="sortLabel">Relevancia</span>
+              <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                <path d="M6 8L0 0h12z" fill="currentColor"/>
+              </svg>
+            </button>
+            <ul id="sortOptions" class="custom-select-options" role="listbox" hidden>
+              <li class="custom-option" data-value="default" role="option">Relevancia</li>
+              <li class="custom-option" data-value="price-asc" role="option">Precio ↑</li>
+              <li class="custom-option" data-value="price-desc" role="option">Precio ↓</li>
+            </ul>
+          </div>
+          <select id="sortSelectHidden" class="sort-select" style="display:none;">
+            <option value="default">Relevancia</option>
+            <option value="price-asc">Precio ↑</option>
+            <option value="price-desc">Precio ↓</option>
+          </select>
+        </div>
+
+        <div class="producto-grid" id="productoGrid">
+          <!-- Productos cargados dinámicamente desde API -->
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="main-footer">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <span class="logo-icon">B5</span>
+        <span>Big5hats</span>
+      </div>
+      <p class="footer-note">Estilo que te distingue. Gorras pensadas para tu día a día con un toque premium.</p>
+      <p class="footer-note">Proyecto académico de la Universidad Autónoma de Aguascalientes.</p>
+      <p class="footer-copy">© 2025 Big5hats. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/productos.js"></script>
+</body>
+</html>
