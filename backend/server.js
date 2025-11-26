@@ -5,19 +5,24 @@ import authRoutes from "./routes/auth.routes.js";
 import captchaRoutes from "./routes/captcha.routes.js";
 import contactoRoutes from "./routes/contacto.routes.js";
 import productosRoutes from "./routes/productos.routes.js";
+import carritoRoutes from "./routes/carrito.routes.js";
+import verificarToken from "./middleware/auth.middleware.js";
 import errorMiddleware from "./middleware/error.middleware.js";
-import "./models/conexion.js"; // conectar a mongo al iniciar servidor
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Rutas públicas
 app.use("/api/auth", authRoutes);
 app.use("/api/captcha", captchaRoutes);
 app.use("/api/contacto", contactoRoutes);
-app.use("/api/productos", productosRoutes);
 
-// Error handler
+// Rutas protegidas (requieren autenticación)
+app.use("/api/productos", verificarToken, productosRoutes);
+app.use("/api/carrito", verificarToken, carritoRoutes);
+
+// Middleware de errores
 app.use(errorMiddleware);
 
 app.listen(3000, () => {
