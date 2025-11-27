@@ -54,77 +54,9 @@
           </select>
         </div>
 
-        <div class="producto-grid">
-        <article class="producto-card" data-category="clasicos">
-          <div class="producto-media" role="img" aria-label="Clásico" data-src="img/classic.jpg">
-            <span class="media-hint">Imagen (añade en /img/)</span>
-          </div>
-          <div class="product-info">
-            <h3>Gorra Clásica</h3>
-            <p class="muted">Corte limpio y materiales duraderos.</p>
-            <div class="product-meta">
-              <div class="price">$799.00</div>
-              <div class="product-actions"><a class="btn" href="producto-detalle.html?id=1">Ver detalle</a></div>
-            </div>
-          </div>
-        </article>
-
-        <article class="producto-card" data-category="gorras">
-          <div class="producto-media" role="img" aria-label="Deportiva" data-src="img/sport.jpg">
-            <span class="media-hint">Imagen (añade en /img/)</span>
-          </div>
-          <div class="product-info">
-            <h3>Gorra Deportiva</h3>
-            <p class="muted">Ligera y transpirable para actividad física.</p>
-            <div class="product-meta">
-              <div class="price">$649.00</div>
-              <div class="product-actions"><a class="btn" href="producto-detalle.html?id=2">Ver detalle</a></div>
-            </div>
-          </div>
-        </article>
-
-        <article class="producto-card" data-category="beanies">
-          <div class="producto-media" role="img" aria-label="Beanie" data-src="img/beanies.jpg">
-            <span class="media-hint">Imagen (añade en /img/)</span>
-          </div>
-          <div class="product-info">
-            <h3>Beanie Térmico</h3>
-            <p class="muted">Suave y cálido para los días fríos.</p>
-            <div class="product-meta">
-              <div class="price">$399.00</div>
-              <div class="product-actions"><a class="btn" href="producto-detalle.html?id=3">Ver detalle</a></div>
-            </div>
-          </div>
-        </article>
-
-        <article class="producto-card" data-category="paja">
-          <div class="producto-media" role="img" aria-label="Paja" data-src="img/paja.jpg">
-            <span class="media-hint">Imagen (añade en /img/)</span>
-          </div>
-          <div class="product-info">
-            <h3>Sombrero de Paja</h3>
-            <p class="muted">Estilo veraniego, ideal para la playa.</p>
-            <div class="product-meta">
-              <div class="price">$549.00</div>
-              <div class="product-actions"><a class="btn" href="producto-detalle.html?id=4">Ver detalle</a></div>
-            </div>
-          </div>
-        </article>
-
-        <article class="producto-card" data-category="lujo">
-          <div class="producto-media" role="img" aria-label="Lujo" data-src="img/lujo.jpg">
-            <span class="media-hint">Imagen (añade en /img/)</span>
-          </div>
-          <div class="product-info">
-            <h3>Edición de Lujo</h3>
-            <p class="muted">Materiales premium y acabado exclusivo.</p>
-            <div class="product-meta">
-              <div class="price">$1999.00</div>
-              <div class="product-actions"><a class="btn" href="producto-detalle.html?id=5">Ver detalle</a></div>
-            </div>
-          </div>
-        </article>
-      </div>
+        <div class="producto-grid" id="productoGrid">
+          <!-- Productos cargados dinámicamente desde API -->
+        </div>
       </div>
 
     </section>
@@ -158,6 +90,7 @@
     </div>
   </footer>
 
+  <script src="js/productos.js"></script>
   <script>
     // Custom select dropdown
     (function(){

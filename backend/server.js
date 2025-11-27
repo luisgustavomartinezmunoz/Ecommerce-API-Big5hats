@@ -19,7 +19,8 @@ app.use("/api/captcha", captchaRoutes);
 app.use("/api/contacto", contactoRoutes);
 
 // Rutas protegidas (requieren autenticación)
-app.use("/api/productos", verificarToken, productosRoutes);
+// Productos: rutas públicas (listado, detalle, categorías) y rutas protegidas dentro del router
+app.use("/api/productos", productosRoutes);
 app.use("/api/carrito", verificarToken, carritoRoutes);
 
 // Middleware de errores
