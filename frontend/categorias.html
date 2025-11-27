@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Categorías · Big5hats</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo">
+      <span class="logo-icon">B5</span>
+      <span class="logo-text">Big5hats</span>
+    </div>
+
+    <nav class="navbar">
+      <a href="index.html">Inicio</a>
+      <a class="active" href="categorias.html">Categorías</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="contacto.html">Contáctanos</a>
+    </nav>
+
+    <a class="pill-button" href="login.html">Entrar</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <p class="hero-kicker">Colecciones</p>
+        <h1>Encuentra el estilo perfecto en nuestras categorías</h1>
+        <p class="hero-subtext">Explora nuestra selección curada de sombreros y accesorios: desde clásicos hasta diseños modernos. Filtra por estilo, ocasión o precio.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#catalogo">Ver categorías</a>
+          <a class="btn ghost" href="productos.html">Ver todos los productos</a>
+        </div>
+        <div class="hero-highlights" aria-hidden="true">
+          <span>Envío rápido</span>
+          <span>Soporte 24/7</span>
+          <span>Garantía de calidad</span>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=1200&q=60" alt="Sombreros destacados">
+      </div>
+    </section>
+
+    <section id="catalogo" class="categorias-section page">
+      <header class="section-header">
+        <p class="section-kicker">Explora</p>
+        <h2>Categorías populares</h2>
+        <p class="section-subtext">Haz clic en una categoría para ver los productos. Diseño responsivo pensado para móviles y escritorio.</p>
+      </header>
+
+      <div class="categorias-container">
+        <article class="categoria-card">
+          <div class="categoria-media" role="img" aria-label="Sombreros clásicos" data-src="img/classic.jpg">
+            <span class="media-hint">Imagen (agrega tu archivo en /img/)</span>
+          </div>
+          <div class="card-info">
+            <h3>Sombreros Clásicos</h3>
+            <p>Modelos elegantes y atemporales, perfectos para ocasiones formales.</p>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+              <span class="pill-chip">Más vendidos</span>
+              <a class="btn" href="productos.html?categoria=clasicos">Ver productos</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="categoria-card">
+          <div class="categoria-media" role="img" aria-label="Gorras deportivas" data-src="img/sport.jpg">
+            <span class="media-hint">Imagen (agrega tu archivo en /img/)</span>
+          </div>
+          <div class="card-info">
+            <h3>Gorras y Caps</h3>
+            <p>Diseños deportivos y urbanos para el día a día.</p>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+              <span class="pill-chip">Nuevas</span>
+              <a class="btn" href="productos.html?categoria=gorras">Ver productos</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="categoria-card">
+          <div class="categoria-media" role="img" aria-label="Beanies" data-src="img/beanies.jpg">
+            <span class="media-hint">Imagen (agrega tu archivo en /img/)</span>
+          </div>
+          <div class="card-info">
+            <h3>Beanies</h3>
+            <p>Calidez y estilo para temporadas frías, en colores sólidos y estampados.</p>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+              <span class="pill-chip">Temporada</span>
+              <a class="btn" href="productos.html?categoria=beanies">Ver productos</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="categoria-card">
+          <div class="categoria-media" role="img" aria-label="Sombreros de paja" data-src="img/paja.jpg">
+            <span class="media-hint">Imagen (agrega tu archivo en /img/)</span>
+          </div>
+          <div class="card-info">
+            <h3>Sombreros de paja</h3>
+            <p>Perfectos para la playa y días soleados, ligeros y con estilo veraniego.</p>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+              <span class="pill-chip">Verano</span>
+              <a class="btn" href="productos.html?categoria=paja">Ver productos</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="categoria-card">
+          <div class="categoria-media" role="img" aria-label="Sombreros de lujo" data-src="img/lujo.jpg">
+            <span class="media-hint">Imagen (agrega tu archivo en /img/)</span>
+          </div>
+          <div class="card-info">
+            <h3>Edición de lujo</h3>
+            <p>Materiales premium y acabados exclusivos para gustos exigentes.</p>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+              <span class="pill-chip">Edición limitada</span>
+              <a class="btn" href="productos.html?categoria=lujo">Ver productos</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="categoria-card">
+          <div class="categoria-media" role="img" aria-label="Accesorios" data-src="img/accesorios.jpg">
+            <span class="media-hint">Imagen (agrega tu archivo en /img/)</span>
+          </div>
+          <div class="card-info">
+            <h3>Accesorios</h3>
+            <p>Cintas, bandanas y complementos para personalizar tu look.</p>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+              <span class="pill-chip">Complementos</span>
+              <a class="btn" href="productos.html?categoria=accesorios">Ver productos</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="promo-banner" aria-hidden="true">
+      <div class="promo-text">
+        <p class="promo-kicker">Oferta limitada</p>
+        <h3 class="promo-title">Descuentos en packs de temporada</h3>
+        <p class="promo-sub">Aprovecha bundles con envío gratis por tiempo limitado.</p>
+        <div style="margin-top:12px"><a class="btn primary" href="productos.html">Comprar ahora</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="main-footer">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <span class="logo-icon">B5</span>
+        <span>Big5hats</span>
+      </div>
+      <p class="footer-note">Estilo que te distingue. Gorras pensadas para tu día a día con un toque premium.</p>
+      <p class="footer-note">Proyecto académico de la Universidad Autónoma de Aguascalientes.</p>
+      <p class="footer-copy">© 2025 Big5hats. Todos los derechos reservados.</p>
+    </div>
+    <div class="footer-nav">
+      <strong>Explora</strong>
+      <a href="index.html">Inicio</a>
+      <a href="categorias.html">Categorías</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="contacto.html">Contáctanos</a>
+    </div>
+    <div class="footer-nav">
+      <strong>Ayuda</strong>
+      <a href="login.html">Cuenta</a>
+      <a href="contacto.html">Soporte</a>
+    </div>
+    <div class="footer-nav">
+      <strong>Redes</strong>
+      <a class="social-link" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer"><span>IG</span> Instagram</a>
+    </div>
+  </footer>
+
+  <script>
+    // pequeña mejora: poner año actual
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
