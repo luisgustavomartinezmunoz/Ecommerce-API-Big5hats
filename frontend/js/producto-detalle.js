@@ -1,3 +1,4 @@
+// Lógica para cargar un producto por id y mostrar la información
 const API_BASE = '/api';
 const params = new URLSearchParams(location.search);
 const id = params.get('id');
@@ -19,14 +20,19 @@ async function fetchProducto(id){
 
 function render(product){
   if(!product){
-    if($title) $title.textContent = 'No encontrado';
-    if($media) $media.textContent = '';
-    if($info) $info.innerHTML = '<p class="muted">El producto solicitado no existe o no está disponible.</p>';
+    $title.textContent = 'No encontrado';
+    $media.textContent = '';
+    $info.innerHTML = '<p class="muted">El producto solicitado no existe o no está disponible.</p>';
     return;
   }
-  if($title) $title.textContent = product.nombre;
-  if($media) $media.innerHTML = product.imagen ? `<img src="${product.imagen}" alt="${product.nombre}" style="max-width:100%">` : '<div class="media-hint">Sin imagen</div>';
-  if($info) $info.innerHTML = `\n    <p class="muted">Categoría: ${product.categoria}</p>\n    <p>${product.descripcion || ''}</p>\n    <p class="price">$${Number(product.precio).toFixed(2)}</p>\n    <p>Stock: ${product.stock}</p>\n  `;
+  $title.textContent = product.nombre;
+  $media.innerHTML = product.imagen ? `<img src="${product.imagen}" alt="${product.nombre}" style="max-width:100%">` : '<div class="media-hint">Sin imagen</div>';
+  $info.innerHTML = `
+    <p class="muted">Categoría: ${product.categoria}</p>
+    <p>${product.descripcion || ''}</p>
+    <p class="price">$${Number(product.precio).toFixed(2)}</p>
+    <p>Stock: ${product.stock}</p>
+  `;
 }
 
 (async function(){

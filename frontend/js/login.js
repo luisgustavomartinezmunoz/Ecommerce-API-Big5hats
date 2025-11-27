@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 const data = await res.json();
                 if (res.ok) {
+                    // Guardar token (y role) para operaciones protegidas
+                    if (data.token) localStorage.setItem('token', data.token);
+                    if (data.role) localStorage.setItem('role', data.role);
                     alert('Login exitoso');
                     window.location.href = 'index.html';
                 } else {
