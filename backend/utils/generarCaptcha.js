@@ -20,10 +20,22 @@ export function generarCaptcha() {
         intentos: 0
     });
     
-    // Limpiar CAPTCHAs expirados
-    limpiarCaptchasExpirados();
-    
-    return { captchaId, codigo };
+        // Limpiar CAPTCHAs expirados
+        limpiarCaptchasExpirados();
+
+        // Crear una imagen SVG simple con el código (sin dependencias externas)
+        const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='220' height='60'>
+            <defs>
+                <linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='#${Math.floor(Math.random()*16777215).toString(16)}' /><stop offset='1' stop-color='#${Math.floor(Math.random()*16777215).toString(16)}' /></linearGradient>
+            </defs>
+            <rect width='100%' height='100%' fill='#0b0c10' rx='8' />
+            <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Manrope, Arial, sans-serif' font-size='28' font-weight='800' fill='url(#g)'>${codigo}</text>
+        </svg>`;
+
+        const svgBase64 = Buffer.from(svg).toString('base64');
+        const img = `data:image/svg+xml;base64,${svgBase64}`;
+
+        return { captchaId, codigo, img };
 }
 
 export function verificarCaptcha(captchaId, codigoIngresado) {
