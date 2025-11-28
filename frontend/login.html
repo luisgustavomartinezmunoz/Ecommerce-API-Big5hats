@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -43,8 +43,10 @@
                     <label class="input-label" for="contrasena">Contraseña</label>
                     <input type="password" id="contrasena" placeholder="********" required>
 
-                    <div class="captcha-container">
-                        <img id="captchaImg" src="http://localhost:3000/api/captcha/generar" alt="Captcha">
+                    <div class="captcha-container" style="justify-content:flex-start;gap:12px;">
+                        <div id="captchaCode" class="captcha-box"></div>
+                        <input type="hidden" id="captchaId">
+                        <button type="button" class="btn" id="btnReloadCaptcha">Recargar CAPTCHA</button>
                     </div>
 
                     <label class="input-label" for="captchaTexto">Ingresa el CAPTCHA</label>
@@ -52,7 +54,14 @@
 
                     <button type="submit">Entrar</button>
                 </form>
-                <p class="muted-hint">Protegemos tu sesión con un captcha sencillo.</p>
+                <div id="loginStatus" class="auth-status" role="status"></div>
+                <div id="loginSuccess" class="auth-modal" aria-live="polite">
+                  <div class="auth-modal-box">
+                    <div class="toast-icon">✓</div>
+                    <div class="toast-text">Login exitoso</div>
+                  </div>
+                </div>
+                <p class="muted-hint">Usa tu correo y contraseña para entrar. Incluye CAPTCHA y bloqueo por intentos.</p>
             </div>
         </section>
     </main>
@@ -88,4 +97,3 @@
     <script src="js/login.js"></script>
 </body>
 </html>
-

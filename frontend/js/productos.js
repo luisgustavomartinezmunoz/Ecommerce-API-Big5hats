@@ -1,102 +1,181 @@
-// Lógica para cargar productos desde la API
-const API_BASE = '/api';
-const $grid = document.getElementById('productoGrid');
-const $catalogTitle = document.getElementById('catalogTitle');
-const urlParams = new URLSearchParams(location.search);
-let categoria = urlParams.get('categoria') || '';
-let sortValue = document.getElementById('sortSelectHidden') ? document.getElementById('sortSelectHidden').value : 'default';
+const API_BASE_PRODUCTS = window.API_BASE || "http://localhost:4700/api";
 
-async function fetchProductos({ categoria, sort } = {}){
-  try{
-    const q = [];
-    if(categoria) q.push(`categoria=${encodeURIComponent(categoria)}`);
-    if(sort && sort !== 'default') q.push(`sort=${encodeURIComponent(sort)}`);
-    const query = q.length ? `?${q.join('&')}` : '';
-    const res = await fetch(`${API_BASE}/productos${query}`);
-    if(!res.ok) throw new Error('Error al obtener productos');
-    const body = await res.json();
-    return body.data || [];
-  }catch(err){
-    console.error('fetchProductos', err);
-    return [];
+const $grid = document.getElementById("productoGrid");
+const $catalogTitle = document.getElementById("catalogTitle");
+const $cat = document.getElementById("fCategoria");
+const $min = document.getElementById("fMin");
+const $max = document.getElementById("fMax");
+const $oferta = document.getElementById("fOferta");
+const $sort = document.getElementById("fSort");
+const $btn = document.getElementById("btnAplicarFiltros");
+
+const urlParams = new URLSearchParams(location.search);
+const categoriaInicial = urlParams.get("categoria") || "";
+
+function currency(valor) {
+  try {
+    return "$" + Number(valor).toLocaleString("es-MX", { minimumFractionDigits: 2 });
+  } catch (e) {
+    return "$0.00";
   }
 }
 
-function currency(valor){
-  try{ return '$' + Number(valor).toLocaleString('es-MX', { minimumFractionDigits: 2 }); }
-  catch(e){ return '$0.00'; }
+async function fetchCategorias() {
+  try {
+    const res = await fetch(`${API_BASE_PRODUCTS}/productos/categorias`);
+    if (!res.ok) throw new Error("Error al cargar categorias");
+    const body = await res.json();
+    const cats = body.data || [];
+    cats.forEach((c) => {
+      const opt = document.createElement("option");
+      opt.value = c.slug;
+      opt.textContent = c.nombre;
+      $cat.appendChild(opt);
+    });
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-function renderProductoCard(producto){
-  const a = document.createElement('article');
-  a.className = 'producto-card';
-  a.setAttribute('data-category', producto.categoria || '');
+async function fetchProductos(params = {}) {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== "") query.append(k, v);
+  });
+  const res = await fetch(`${API_BASE_PRODUCTS}/productos?${query.toString()}`);
+  if (!res.ok) throw new Error("Error al obtener productos");
+  const body = await res.json();
+  return body;
+}
 
-  const media = document.createElement('div');
-  media.className = 'producto-media';
-  if(producto.imagen){
-    const img = document.createElement('img');
+function renderProductoCard(producto) {
+  const card = document.createElement("article");
+  card.className = "producto-card";
+  card.setAttribute("data-category", producto.categoria || "");
+
+  const media = document.createElement("div");
+  media.className = "producto-media";
+  if (producto.imagen) {
+    const img = document.createElement("img");
     img.src = producto.imagen;
-    img.alt = producto.nombre || '';
+    img.alt = producto.nombre || "";
     media.appendChild(img);
   } else {
     media.innerHTML = `<span class="media-hint">Sin imagen</span>`;
   }
+  if (!producto.disponible) {
+    const badge = document.createElement("span");
+    badge.className = "pill-chip danger";
+    badge.textContent = "Sin stock";
+    media.appendChild(badge);
+  } else if (producto.oferta) {
+    const badge = document.createElement("span");
+    badge.className = "pill-chip success";
+    badge.textContent = "Oferta";
+    media.appendChild(badge);
+  }
 
-  const info = document.createElement('div');
-  info.className = 'product-info';
+  const info = document.createElement("div");
+  info.className = "product-info";
   info.innerHTML = `
-    <h3>
-      ${producto.nombre}
-    </h3>
-    <p class="muted">${producto.descripcion || ''}</p>
+    <h3>${producto.nombre}</h3>
+    <p class="muted">${producto.descripcion || ""}</p>
     <div class="product-meta">
       <div class="price">${currency(producto.precio)}</div>
-      <div class="product-actions"><a class="btn" href="producto-detalle.html?id=${producto._id}">Ver detalle</a></div>
+      ${producto.oferta ? '<span class="pill-chip success">Promo</span>' : ""}
     </div>
   `;
 
-  a.appendChild(media);
-  a.appendChild(info);
-  return a;
+  const actions = document.createElement("div");
+  actions.className = "product-actions";
+  const btn = document.createElement("button");
+  btn.className = "btn";
+  btn.textContent = producto.disponible ? "Agregar al carrito" : "No disponible";
+  btn.disabled = !producto.disponible;
+  actions.appendChild(btn);
+  info.appendChild(actions);
+
+  card.appendChild(media);
+  card.appendChild(info);
+  return card;
 }
 
-async function loadAndRender(){
-  const products = await fetchProductos({ categoria, sort: sortValue });
-  if(!$grid) return;
-  $grid.innerHTML = '';
-  if(!products.length){
-    $grid.innerHTML = '<p class="muted">No se encontraron productos.</p>';
-    return;
+async function loadAndRender() {
+  if ($grid) $grid.innerHTML = '<p class="muted">Cargando productos...</p>';
+  try {
+    const params = {
+      categoria: $cat?.value || "",
+      minPrecio: $min?.value || "",
+      maxPrecio: $max?.value || "",
+      oferta: $oferta?.checked ? "1" : "",
+      sort: $sort?.value || "created_at",
+    };
+    const { data = [], meta } = await fetchProductos(params);
+    if ($catalogTitle && params.categoria) {
+      const selected = $cat.options[$cat.selectedIndex]?.textContent || params.categoria;
+      $catalogTitle.textContent = `Categoria: ${selected}`;
+    } else if ($catalogTitle) {
+      $catalogTitle.textContent = "Todos los productos";
+    }
+
+    if (!$grid) return;
+    $grid.innerHTML = "";
+    if (!data.length) {
+      $grid.innerHTML = '<p class="muted">No se encontraron productos.</p>';
+      return;
+    }
+    data.forEach((p) => $grid.appendChild(renderProductoCard(p)));
+
+    if (meta) {
+      console.log("Meta", meta);
+    }
+  } catch (err) {
+    console.error(err);
+    if ($grid) $grid.innerHTML = '<p class="muted">Error al cargar productos. Verifica que el backend en puerto 4700 esté encendido.</p>';
   }
-  products.forEach(p => $grid.appendChild(renderProductoCard(p)));
 }
 
-// Configuración de eventos de orden (dropdown)
-document.addEventListener('change', (e) =>{
-  if(e.target && e.target.id === 'sortSelectHidden'){
-    sortValue = e.target.value;
-    loadAndRender();
-  }
-});
-
-if(categoria && $catalogTitle) {
-  $catalogTitle.textContent = 'Categoría: ' + decodeURIComponent(categoria).replace(/(^|\s)\S/g, s => s.toUpperCase());
-}
-
-loadAndRender();
-
-// Expose helper
-window.__Big5_Products = { loadAndRender, fetchProductos };
-
-// Admin helper
-window.__Big5_Products.crearProductoAdmin = async function(payload){
-  const token = localStorage.getItem('token');
-  if(!token) throw new Error('No autenticado');
-  const res = await fetch(`${API_BASE}/productos`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-    body: JSON.stringify(payload)
+function bindUI() {
+  if ($btn) $btn.addEventListener("click", loadAndRender);
+  [$cat, $min, $max, $oferta, $sort].forEach((el) => {
+    if (!el) return;
+    el.addEventListener("change", () => {
+      if (el === $cat && el.value) {
+        urlParams.set("categoria", el.value);
+        history.replaceState(null, "", `${location.pathname}?${urlParams.toString()}`);
+      }
+      loadAndRender();
+    });
   });
-  return await res.json();
+}
+
+async function init() {
+  await fetchCategorias();
+  if (categoriaInicial && $cat) {
+    $cat.value = categoriaInicial;
+    if ($catalogTitle) $catalogTitle.textContent = `Categoria: ${categoriaInicial}`;
+  }
+  bindUI();
+  loadAndRender();
+}
+
+init();
+
+// Helpers para pruebas manuales desde la consola (alta, baja, cambio)
+window.Big5hatsAdmin = {
+  crear: (payload) =>
+    fetch(`${API_BASE}/productos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).then((r) => r.json()),
+  actualizar: (id, payload) =>
+    fetch(`${API_BASE}/productos/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).then((r) => r.json()),
+  eliminar: (id) =>
+    fetch(`${API_BASE}/productos/${id}`, { method: "DELETE" }).then((r) => r.json()),
+  refrescar: loadAndRender,
 };
