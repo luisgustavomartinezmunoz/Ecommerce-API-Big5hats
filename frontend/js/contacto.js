@@ -1,3 +1,5 @@
+const API_BASE = window.API_BASE || "http://localhost:4700/api";
+
 document.querySelector("#formContacto").addEventListener("submit", async e => {
     e.preventDefault();
 
@@ -7,7 +9,7 @@ document.querySelector("#formContacto").addEventListener("submit", async e => {
         mensaje: document.querySelector("#mensaje").value
     };
 
-    const respuesta = await fetch("http://localhost:3000/api/contacto/enviar", {
+    const respuesta = await fetch(`${API_BASE}/contacto/enviar`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos)
