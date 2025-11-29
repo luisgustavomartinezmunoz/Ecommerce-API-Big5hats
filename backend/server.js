@@ -19,6 +19,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Servir imagenes estaticas almacenadas en el backend (por ejemplo /img/archivo.jpg)
+const imagesPath = path.join(__dirname, "img");
+app.use("/img", express.static(imagesPath));
+
 // Servir frontend estatico
 const frontendPath = path.join(__dirname, "..", "frontend");
 app.use(express.static(frontendPath));
