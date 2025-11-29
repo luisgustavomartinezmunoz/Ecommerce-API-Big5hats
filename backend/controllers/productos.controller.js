@@ -22,8 +22,21 @@ const validateProductPayload = (payload = {}) => {
   if (descripcion && typeof descripcion !== "string")
     errors.push("descripcion debe ser texto");
   if (imagen && typeof imagen !== "string")
-    errors.push("imagen debe ser la url de la imagen");
+    errors.push("imagen debe ser la url o ruta de la imagen");
   return errors;
+};
+
+// Helper: build absolute URL for images stored in backend /img folder
+const buildImageUrl = (req, imagen) => {
+  if (!imagen) return null;
+  if (/^https?:\/\//i.test(imagen)) return imagen; // external URL already
+  const normalized = imagen.startsWith("/") ? imagen : `/${imagen}`;
+  return `${req.protocol}://${req.get("host")}${normalized}`;
+};
+
+const mapProductoImagen = (producto, req) => {
+  if (!producto) return null;
+  return { ...producto, imagen: buildImageUrl(req, producto.imagen) };
 };
 
 // GET /api/productos
@@ -54,7 +67,8 @@ export const obtenerProductos = async (req, res, next) => {
     if (disponible !== undefined) filters.disponible = disponible === "true" || disponible === "1";
 
     const result = await listProductos(filters);
-    return res.json({ success: true, data: result.data, meta: result.meta });
+    const data = (result.data || []).map((p) => mapProductoImagen(p, req));
+    return res.json({ success: true, data, meta: result.meta });
   } catch (err) {
     return next(err);
   }
@@ -74,7 +88,7 @@ export const obtenerCategorias = async (req, res, next) => {
 export const obtenerProducto = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const producto = await getProducto(id);
+    const producto = mapProductoImagen(await getProducto(id), req);
     if (!producto) return res.status(404).json({ mensaje: "Producto no encontrado" });
     return res.json({ success: true, data: producto });
   } catch (err) {
@@ -89,7 +103,7 @@ export const crearProducto = async (req, res, next) => {
     const errors = validateProductPayload(payload);
     if (errors.length) return res.status(400).json({ mensaje: "Datos invalidos", errors });
 
-    const producto = await createProducto(payload);
+    const producto = mapProductoImagen(await createProducto(payload), req);
     return res.status(201).json({ success: true, data: producto });
   } catch (err) {
     next(err);
@@ -109,7 +123,7 @@ export const actualizarProducto = async (req, res, next) => {
     });
     if (errors.length) return res.status(400).json({ mensaje: "Datos invalidos", errors });
 
-    const producto = await updateProducto(id, payload);
+    const producto = mapProductoImagen(await updateProducto(id, payload), req);
     if (!producto) return res.status(404).json({ mensaje: "Producto no encontrado" });
     return res.json({ success: true, data: producto });
   } catch (err) {
