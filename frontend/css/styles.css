@@ -496,6 +496,43 @@ main { width: 100%; }
     .pill-button { font-size: 14px; }
 }
 
+/* Carrito */
+.pill-button.ghost#cartButton { background: rgba(255,255,255,0.02); color: var(--text); }
+#cartBadge { font-size: 13px; }
+
+/* Selector minimalista para países */
+.minimal-select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    color: var(--text);
+    font-weight: 800;
+}
+.minimal-select:focus { outline: 2px solid rgba(214,167,79,0.18); }
+
+/* Promo banner */
+#promoBanner { }
+
+/* Coupon message styles (integradas con auth-status existentes) */
+.auth-status.success { border-color: rgba(46, 204, 113, 0.6); color: #2ecc71; background: rgba(46,204,113,0.06); }
+.auth-status.error { border-color: rgba(231, 76, 60, 0.7); color: #e74c3c; background: rgba(231,76,60,0.04); }
+.auth-status.info { border-color: rgba(214, 167, 79, 0.6); color: var(--accent-2); background: rgba(214,167,79,0.04); }
+
+/* Modal adjustments to match site look */
+.auth-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; z-index: 9999; }
+.auth-modal.show { opacity: 1; pointer-events: all; }
+.auth-modal-box { min-width: 320px; border-radius: 12px; box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+
+/* Carrito page tweaks */
+#cartItems { max-height: 420px; overflow: auto; }
+
+@media (max-width:900px) {
+    main .page { padding: 12px; }
+    .page > div { grid-template-columns: 1fr !important; }
+}
+
 
 
 

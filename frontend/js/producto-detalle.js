@@ -72,6 +72,39 @@ function render(product) {
   if (btnWishlist) {
     btnWishlist.addEventListener("click", () => addWishlist(product.id));
   }
+
+  // Añadir funcionalidad de agregar al carrito respetando inicio de sesión
+  const btnAddCart = document.getElementById('btnAddCart');
+  if (btnAddCart) {
+    btnAddCart.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+      if (!token) {
+        notify('Debes iniciar sesión para añadir productos al carrito.', 'error');
+        // Llevar al login opcionalmente
+        setTimeout(() => { window.location.href = 'login.html'; }, 800);
+        return;
+      }
+
+      try {
+        // Usaremos carrito en localStorage para esta demo
+        const raw = localStorage.getItem('big5hats_cart');
+        const cart = raw ? JSON.parse(raw) : [];
+        const existing = cart.find((it) => it.id === product.id);
+        if (existing) {
+          existing.cantidad = Number(existing.cantidad || 0) + 1;
+        } else {
+          cart.push({ id: product.id, nombre: product.nombre, precio: Number(product.precio) || 0, cantidad: 1 });
+        }
+        localStorage.setItem('big5hats_cart', JSON.stringify(cart));
+        notify('Producto agregado al carrito.', 'success');
+        if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
+      } catch (err) {
+        console.error(err);
+        notify('No pudimos añadir el producto al carrito.', 'error');
+      }
+    });
+  }
 }
 
 (async function () {
