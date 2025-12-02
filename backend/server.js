@@ -11,6 +11,7 @@ import productosRoutes from "./routes/productos.routes.js";
 import carritoRoutes from "./routes/carrito.routes.js";
 import suscripcionRoutes from "./routes/suscripcion.routes.js";
 import wishlistRoutes from "./routes/wishlist.routes.js";
+import ordenesRoutes from "./routes/ordenes.routes.js";
 import verificarToken from "./middleware/auth.middleware.js";
 import errorMiddleware from "./middleware/error.middleware.js";
 
@@ -36,6 +37,7 @@ app.use("/api/contacto", contactoRoutes);
 app.use("/api/productos", productosRoutes);
 app.use("/api/suscripcion", suscripcionRoutes);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/ordenes", verificarToken, ordenesRoutes);
 
 // Rutas protegidas API (puedes reactivar auth cuando conectes login)
 app.use("/api/carrito", verificarToken, carritoRoutes);
