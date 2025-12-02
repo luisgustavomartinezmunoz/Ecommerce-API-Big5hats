@@ -312,63 +312,120 @@
     setTimeout(() => modal.remove(), 300);
   }
 
-  // Checkout simulator (más estético)
+  
+  // Checkout real contra API
   const checkoutBtn = document.getElementById('checkoutBtn');
   if (checkoutBtn) {
     checkoutBtn.textContent = 'Proceso de pago';
-    checkoutBtn.addEventListener('click', (ev) => {
+    checkoutBtn.addEventListener('click', async (ev) => {
       ev.preventDefault();
       const cart = readCart();
       if (!cart.length) {
-        if (typeof window.showNotice === 'function') window.showNotice('Tu carrito está vacío.', 'error');
+        if (typeof window.showNotice === 'function') window.showNotice('Tu carrito esta vacio.', 'error');
         return;
       }
-      // Validar datos de envío
+      // Validar datos de envio
       const name = document.getElementById('shipName')?.value?.trim();
       const addr = document.getElementById('shipAddress')?.value?.trim();
       const city = document.getElementById('shipCity')?.value?.trim();
       const zip = document.getElementById('shipZip')?.value?.trim();
       const phone = document.getElementById('shipPhone')?.value?.trim();
       if (!name || !addr || !city || !zip || !phone) {
-        if (typeof window.showNotice === 'function') window.showNotice('Completa todos los datos de envío.', 'error');
+        if (typeof window.showNotice === 'function') window.showNotice('Completa todos los datos de envio.', 'error');
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        if (typeof window.showNotice === 'function') window.showNotice('Inicia sesion para finalizar la compra.', 'error');
         return;
       }
 
       const opt = getCountryOption();
       const countrySel = opt ? opt.textContent : '';
-      const totals = computeTotals();
       const payMethod = document.querySelector('input[name="payMethod"]:checked')?.value || 'card';
-
+      const totals = computeTotals();
       const applied = getAppliedPromo();
-      const promoHtml = applied ? `<div style="font-size:13px;color:var(--muted)">Cupón: <strong>${applied.code}</strong></div>` : '';
 
-      const cartHtml = readCart().map(it => `<div style="display:flex; justify-content:space-between; margin:6px 0;"><div>${it.nombre} x ${it.cantidad}</div><div style="font-weight:900">${currency(((Number(it.precio)||0)* (Number(opt?.dataset.mult||1))) * Number(it.cantidad))}</div></div>`).join('');
+      const payload = {
+        items: cart.map(it => ({ productoId: it.id, cantidad: Number(it.cantidad) || 1 })),
+        shipping: totals.shipping,
+        tax: totals.tax,
+        discount: totals.discount,
+        metodoPago: payMethod,
+        promoCode: applied?.code || null,
+        datosEnvio: {
+          nombre: name,
+          direccion: addr,
+          ciudad: city,
+          zip,
+          telefono: phone,
+          pais: opt?.value || '',
+          paisLabel: countrySel
+        }
+      };
 
-      const html = `
+      try {
+        const res = await fetch(`${window.API_BASE}/ordenes/checkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok || !data?.success) {
+          const msg = data?.mensaje || 'No pudimos procesar tu pago.';
+          if (typeof window.showNotice === 'function') window.showNotice(msg, 'error');
+          return;
+        }
+
+        const orden = data.data || {};
+        const promoHtml = applied ? `<div style="font-size:13px;color:var(--muted)">Cupon: <strong>${applied.code}</strong></div>` : '';
+        const itemsHtml = (orden.items || cart).map(it => {
+          const nombre = it.nombre || it.productoNombre || it.nombre_producto || it.id || it.productoId;
+          const cantidad = Number(it.cantidad) || 0;
+          const unit = it.precioUnit !== undefined ? it.precioUnit : it.precio_unit !== undefined ? it.precio_unit : (Number(it.precio) || 0) * (Number(opt?.dataset.mult || 1));
+          return `<div style="display:flex; justify-content:space-between; margin:6px 0;"><div>${nombre} x ${cantidad}</div><div style="font-weight:900">${currency(unit * cantidad)}</div></div>`;
+        }).join('');
+
+        const totalsFromApi = {
+          subtotal: orden.subtotal ?? totals.subtotal,
+          tax: orden.tax ?? totals.tax,
+          shipping: orden.shipping ?? totals.shipping,
+          total: orden.total ?? totals.total,
+          discount: orden.discount ?? totals.discount
+        };
+
+        const html = `
         <div>
-          <h4 style="margin-top:0;">Gracias por tu compra</h4>
-          <p class="muted">Este es un pago simulado. No se realizará ningún cargo.</p>
+          <h4 style="margin-top:0;">Compra confirmada</h4>
+          <p class="muted">Orden #${orden.ordenId || orden.id || 'N/D'} generada correctamente.</p>
           <div style="margin-top:12px; border-top:1px solid var(--border); padding-top:10px;">
-            ${cartHtml}
-            <div style="display:flex; justify-content:space-between; margin-top:8px;"><strong>Subtotal</strong><div>${currency(totals.subtotal)}</div></div>
-            <div style="display:flex; justify-content:space-between;"><strong>Impuestos</strong><div>${currency(totals.tax)}</div></div>
-            <div style="display:flex; justify-content:space-between;"><strong>Envío</strong><div>${currency(totals.shipping)}</div></div>
+            ${itemsHtml}
+            <div style="display:flex; justify-content:space-between; margin-top:8px;"><strong>Subtotal</strong><div>${currency(totalsFromApi.subtotal)}</div></div>
+            <div style="display:flex; justify-content:space-between;"><strong>Impuestos</strong><div>${currency(totalsFromApi.tax)}</div></div>
+            <div style="display:flex; justify-content:space-between;"><strong>Envio</strong><div>${currency(totalsFromApi.shipping)}</div></div>
             ${promoHtml}
-            <div style="display:flex; justify-content:space-between; margin-top:8px;"><strong>Total</strong><div style="font-weight:900">${currency(totals.total)}</div></div>
+            <div style="display:flex; justify-content:space-between; margin-top:8px;"><strong>Total</strong><div style="font-weight:900">${currency(totalsFromApi.total)}</div></div>
           </div>
-          <div style="margin-top:12px; font-size:13px; color:var(--muted)">Simulación: No se ha procesado ningún pago.</div>
+          <div style="margin-top:12px; font-size:13px; color:var(--muted)">Gracias por tu compra.</div>
         </div>
       `;
 
-      showModal(html);
-      if (typeof window.showNotice === 'function') window.showNotice('Pago simulado realizado. Gracias.', 'success');
-      // Vaciar carrito tras simulación
-      writeCart([]);
-      renderCartItems();
+        showModal(html);
+        if (typeof window.showNotice === 'function') window.showNotice('Pago realizado y orden creada.', 'success');
+        // Vaciar carrito tras pago
+        writeCart([]);
+        renderCartItems();
+      } catch (err) {
+        console.error('checkout error', err);
+        if (typeof window.showNotice === 'function') window.showNotice('Error de conexion al procesar pago.', 'error');
+      }
     });
   }
-
-  // Inicial
+// Inicial
   renderCartItems();
   renderPaymentFields();
 })();
