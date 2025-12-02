@@ -65,3 +65,14 @@ INSERT INTO productos (nombre, descripcion, precio, categoria_slug, imagen, disp
 ('Reflective Night', 'Tela iridiscente que refleja luz nocturna.', 779.00, 'edicion-especial', 'img/special.jpg', 1, 11, 1),
 ('Artist Series', 'Ilustracion de artista invitado en sub-visor.', 809.00, 'edicion-especial', 'img/special.jpg', 1, 10, 0),
 ('Urban Camo', 'Camuflaje urbano gris, actualmente sin stock.', 739.00, 'edicion-especial', 'img/special.jpg', 0, 0, 0);
+
+-- Wishlist por usuario
+CREATE TABLE IF NOT EXISTS wishlist (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  producto_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_usuario_producto (usuario_id, producto_id),
+  CONSTRAINT fk_wishlist_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  CONSTRAINT fk_wishlist_producto FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
+);
