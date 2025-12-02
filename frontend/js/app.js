@@ -94,4 +94,49 @@ function renderUserNav() {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderUserNav();
+  // Añadir icono de carrito global con badge
+  (function renderCartIcon() {
+    const header = document.querySelector('.main-header');
+    if (!header) return;
+    // Evitar duplicados
+    if (document.getElementById('cartButton')) return;
+
+    const cartBtn = document.createElement('button');
+    cartBtn.id = 'cartButton';
+    cartBtn.className = 'pill-button ghost';
+    cartBtn.style.display = 'flex';
+    cartBtn.style.alignItems = 'center';
+    cartBtn.style.gap = '8px';
+    cartBtn.innerHTML = `<svg width="20" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 6H21L20 11H8L6 6Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="19" r="1" fill="currentColor"/><circle cx="18" cy="19" r="1" fill="currentColor"/></svg><span style=\"font-weight:800;\">Carrito</span><span id=\"cartBadge\" style=\"background:var(--accent);color:#0b0b0f;padding:4px 8px;border-radius:999px;font-weight:900;margin-left:6px;\">0</span>`;
+
+    cartBtn.addEventListener('click', () => {
+      // Abrir página de carrito
+      window.location.href = 'carrito.html';
+    });
+
+    // Insertar antes del botón de login/pill
+    const pill = document.querySelector('.pill-button');
+    if (pill && pill.parentNode) {
+      pill.parentNode.insertBefore(cartBtn, pill);
+    } else {
+      header.appendChild(cartBtn);
+    }
+
+    // Exponer función para actualizar badge
+    window.updateCartBadge = function () {
+      try {
+        const badge = document.getElementById('cartBadge');
+        if (!badge) return;
+        const raw = localStorage.getItem('big5hats_cart');
+        const items = raw ? JSON.parse(raw) : [];
+        const count = items.reduce((s, it) => s + (Number(it.cantidad) || 0), 0);
+        badge.textContent = count;
+      } catch (e) {
+        console.error('Error actualizando badge', e);
+      }
+    };
+
+    // Inicializa
+    window.updateCartBadge();
+  })();
 });
