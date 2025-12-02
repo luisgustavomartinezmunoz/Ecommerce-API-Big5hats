@@ -49,9 +49,10 @@ async function fetchProductos(params = {}) {
 }
 
 function renderProductoCard(producto) {
-  const card = document.createElement("article");
-  card.className = "producto-card";
-  card.setAttribute("data-category", producto.categoria || "");
+  const link = document.createElement("a");
+  link.className = "producto-card";
+  link.href = `producto-detalle.html?id=${encodeURIComponent(producto.id)}`;
+  link.setAttribute("data-category", producto.categoria || "");
 
   const media = document.createElement("div");
   media.className = "producto-media";
@@ -95,9 +96,9 @@ function renderProductoCard(producto) {
   actions.appendChild(btn);
   info.appendChild(actions);
 
-  card.appendChild(media);
-  card.appendChild(info);
-  return card;
+  link.appendChild(media);
+  link.appendChild(info);
+  return link;
 }
 
 async function loadAndRender() {
