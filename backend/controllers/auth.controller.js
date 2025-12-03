@@ -7,6 +7,7 @@ import {
   resetLockAndAttempts,
   registerFailedAttempt,
 } from "../models/usuario.repo.js";
+import { getUserPreferences, saveUserPreferences } from "../models/usuario.repo.js";
 import { verificarCaptcha } from "../utils/generarCaptcha.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "big5hats_secret";
@@ -151,4 +152,30 @@ export const perfil = async (req, res) => {
       role: user.role,
     },
   });
+};
+
+export const getPreferences = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) return res.status(401).json({ mensaje: "Token invalido" });
+    const prefs = await getUserPreferences(user.id);
+    return res.json({ ok: true, preferences: prefs || { theme: null, textSize: null } });
+  } catch (err) {
+    console.error('getPreferences error', err);
+    return res.status(500).json({ mensaje: 'Error al obtener preferencias' });
+  }
+};
+
+export const savePreferences = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) return res.status(401).json({ mensaje: "Token invalido" });
+    const { theme, textSize } = req.body || {};
+    const ok = await saveUserPreferences(user.id, { theme, textSize });
+    if (!ok) return res.status(500).json({ mensaje: 'No se pudieron guardar las preferencias' });
+    return res.json({ ok: true, mensaje: 'Preferencias guardadas' });
+  } catch (err) {
+    console.error('savePreferences error', err);
+    return res.status(500).json({ mensaje: 'Error al guardar preferencias' });
+  }
 };

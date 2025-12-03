@@ -35,7 +35,7 @@ function renderUserNav() {
 
     const greeting = document.createElement("span");
     greeting.textContent = `Hola, ${nombre}${role === "admin" ? " (admin)" : ""}`;
-    greeting.style.color = "var(--text-primary, #f5f5f5)";
+    greeting.className = "user-greeting";
     greeting.style.fontWeight = "600";
 
     const btnAdmin = document.createElement("button");
@@ -85,10 +85,13 @@ function renderUserNav() {
     btnLogout.className = "pill-button";
     btnLogout.textContent = "Salir";
     btnLogout.addEventListener("click", () => {
+      // Clear auth + user-specific preferences to avoid leaking settings between accounts
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       localStorage.removeItem("userNombre");
       localStorage.removeItem("userCorreo");
+      localStorage.removeItem("theme");
+      localStorage.removeItem("textSize");
       window.location.href = "index.html";
     });
 

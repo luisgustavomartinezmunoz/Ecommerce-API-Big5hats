@@ -72,3 +72,49 @@ export async function registerFailedAttempt(id, maxAttempts = 5, lockMinutes = 5
     return { locked: false };
   }
 }
+
+// Preferences storage: create table if needed and get/set user preferences
+export async function getUserPreferences(userId) {
+  try {
+    // ensure table exists
+    await pool.execute(`CREATE TABLE IF NOT EXISTS user_preferences (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL UNIQUE,
+      theme VARCHAR(16),
+      text_size VARCHAR(16),
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+
+    const [rows] = await pool.execute(
+      "SELECT theme, text_size FROM user_preferences WHERE user_id = ? LIMIT 1",
+      [userId]
+    );
+    if (!rows?.[0]) return null;
+    return { theme: rows[0].theme, textSize: rows[0].text_size };
+  } catch (err) {
+    console.error('getUserPreferences error', err);
+    return null;
+  }
+}
+
+export async function saveUserPreferences(userId, { theme, textSize }) {
+  try {
+    await pool.execute(`CREATE TABLE IF NOT EXISTS user_preferences (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL UNIQUE,
+      theme VARCHAR(16),
+      text_size VARCHAR(16),
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+
+    await pool.execute(
+      `INSERT INTO user_preferences (user_id, theme, text_size) VALUES (?, ?, ?)
+       ON DUPLICATE KEY UPDATE theme = VALUES(theme), text_size = VALUES(text_size), updated_at = CURRENT_TIMESTAMP`,
+      [userId, theme || null, textSize || null]
+    );
+    return true;
+  } catch (err) {
+    console.error('saveUserPreferences error', err);
+    return false;
+  }
+}
