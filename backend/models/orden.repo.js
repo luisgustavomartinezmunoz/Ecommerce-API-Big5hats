@@ -68,10 +68,19 @@ export async function crearOrdenConDetalles(payload = {}) {
         "INSERT INTO orden_detalles (orden_id, producto_id, cantidad, precio_unit) VALUES (?, ?, ?, ?)",
         [ordenId, det.productoId, det.cantidad, det.precioUnit]
       );
-      await conn.execute(
+      const [updateResult] = await conn.execute(
         "UPDATE productos SET stock = stock - ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
         [det.cantidad, det.productoId]
       );
+      // Si el stock qued�� en 0, marcar como no disponible
+      const [stockRows] = await conn.execute("SELECT stock FROM productos WHERE id = ?", [det.productoId]);
+      const currentStock = Number(stockRows?.[0]?.stock || 0);
+      if (currentStock <= 0) {
+        await conn.execute(
+          "UPDATE productos SET disponible = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+          [det.productoId]
+        );
+      }
     }
 
     await conn.commit();

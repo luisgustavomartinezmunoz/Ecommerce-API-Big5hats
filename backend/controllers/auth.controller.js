@@ -138,3 +138,17 @@ export const login = async (req, res) => {
     return res.status(500).json({ mensaje: "Error al iniciar sesión" });
   }
 };
+
+export const perfil = async (req, res) => {
+  const user = req.user;
+  if (!user) return res.status(401).json({ mensaje: "Token invalido" });
+  return res.json({
+    ok: true,
+    user: {
+      id: user.id,
+      nombre: user.nombre,
+      correo: user.correo,
+      role: user.role,
+    },
+  });
+};

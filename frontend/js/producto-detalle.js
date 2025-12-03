@@ -63,7 +63,7 @@ function render(product) {
     <p class="price">$${Number(product.precio).toFixed(2)}</p>
     <p>${product.disponible ? "Disponible" : "No disponible"} · Stock: ${product.stock ?? 0}</p>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <button class="btn"${product.disponible ? "" : " disabled"} id="btnAddCart">Agregar al carrito</button>
+      <button class="btn" id="btnAddCart" ${product.disponible ? "" : 'style="opacity:0.65;"'}>Agregar al carrito</button>
       <button class="btn ghost" id="btnWishlist">Agregar a deseos</button>
     </div>
   `;
@@ -78,6 +78,10 @@ function render(product) {
   if (btnAddCart) {
     btnAddCart.addEventListener('click', async (e) => {
       e.preventDefault();
+      if (!product.disponible || Number(product.stock || 0) <= 0) {
+        notify('Por el momento este producto no está disponible', 'error');
+        return;
+      }
       const token = localStorage.getItem('token');
       if (!token) {
         notify('Debes iniciar sesión para añadir productos al carrito.', 'error');

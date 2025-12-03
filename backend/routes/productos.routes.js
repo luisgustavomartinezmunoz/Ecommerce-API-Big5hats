@@ -7,6 +7,7 @@ import {
   obtenerCategorias,
   obtenerProducto,
 } from "../controllers/productos.controller.js";
+import { verificarAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -16,8 +17,8 @@ router.get("/categorias", obtenerCategorias);
 router.get("/:id", obtenerProducto);
 
 // CRUD (agrega middleware de auth si lo necesitas)
-router.post("/", crearProducto);
-router.put("/:id", actualizarProducto);
-router.delete("/:id", eliminarProducto);
+router.post("/", verificarAdmin, crearProducto);
+router.put("/:id", verificarAdmin, actualizarProducto);
+router.delete("/:id", verificarAdmin, eliminarProducto);
 
 export default router;

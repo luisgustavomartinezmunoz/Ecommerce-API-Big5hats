@@ -38,6 +38,14 @@ function renderUserNav() {
     greeting.style.color = "var(--text-primary, #f5f5f5)";
     greeting.style.fontWeight = "600";
 
+    const btnAdmin = document.createElement("button");
+    btnAdmin.className = "pill-button ghost";
+    btnAdmin.textContent = "Panel admin";
+    btnAdmin.style.display = role === "admin" ? "inline-flex" : "none";
+    btnAdmin.addEventListener("click", () => {
+      window.location.href = "admin.html";
+    });
+
     const btnWishlist = document.createElement("button");
     btnWishlist.className = "pill-button ghost";
     btnWishlist.textContent = "Wishlist";
@@ -85,6 +93,7 @@ function renderUserNav() {
     });
 
     wrapper.appendChild(greeting);
+    wrapper.appendChild(btnAdmin);
     wrapper.appendChild(btnWishlist);
     wrapper.appendChild(btnSub);
     wrapper.appendChild(btnLogout);
