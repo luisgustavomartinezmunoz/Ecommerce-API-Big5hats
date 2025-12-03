@@ -151,7 +151,7 @@ function renderProductos() {
 }
 
 async function cargarProductos() {
-  const { data = [] } = await fetchJSON(`${API_BASE_ADMIN}/productos`, {
+  const { data = [] } = await fetchJSON(`${API_BASE_ADMIN}/productos?limit=100&page=1`, {
     headers: authHeaders(),
   });
   state.productos = data;
