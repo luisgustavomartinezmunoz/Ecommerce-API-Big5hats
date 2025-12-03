@@ -27,6 +27,13 @@ export async function createUser({ nombre, correo, contrasena, role = "user" }) 
   return { id: result.insertId, nombre, correo, role };
 }
 
+export async function updatePassword(id, hash) {
+  await pool.execute(
+    "UPDATE usuarios SET contrasena = ? WHERE id = ?",
+    [hash, id]
+  );
+}
+
 export async function resetLockAndAttempts(id) {
   try {
     await pool.execute(
