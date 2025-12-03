@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accesibilidad - Big5hats</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        :root.light-mode {
+            --bg-1: #f5f5f7;
+            --bg-2: #ffffff;
+            --card: #ffffff;
+            --accent: #d6a74f;
+            --accent-2: #f2d28f;
+            --text: #1a1a1a;
+            --muted: #666666;
+            --border: rgba(0, 0, 0, 0.1);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode {
+            background: linear-gradient(150deg, #f5f5f7, #ffffff);
+        }
+
+        body.light-mode .main-header {
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08);
+        }
+
+        body.light-mode .accessibility-page {
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        body.light-mode .section-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.88));
+        }
+
+        body.light-mode .section-card h3 {
+            color: #0b0c10;
+        }
+
+        body.light-mode .toggle-container {
+            background: linear-gradient(135deg, rgba(214, 167, 79, 0.15), rgba(242, 210, 143, 0.1));
+        }
+
+        /* Accessibility Page Styles */
+        .accessibility-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .accessibility-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            gap: 20px;
+        }
+
+        .accessibility-header h1 {
+            font-size: 32px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .accessibility-header a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(214, 167, 79, 0.15);
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            font-size: 18px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .accessibility-header a:hover {
+            background: rgba(214, 167, 79, 0.25);
+            box-shadow: 0 0 15px rgba(214, 167, 79, 0.3);
+        }
+
+        .section-card {
+            background: linear-gradient(135deg, rgba(20, 23, 32, 0.8), rgba(17, 19, 27, 0.6));
+            border: 1px solid rgba(214, 167, 79, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .section-card h3 {
+            font-size: 22px;
+            margin: 0 0 16px 0;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-card p {
+            margin: 0 0 16px 0;
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(214, 167, 79, 0.1), rgba(242, 210, 143, 0.05));
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: rgba(214, 167, 79, 0.3);
+            border-radius: 999px;
+            cursor: pointer;
+            border: 2px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle.light {
+            background: linear-gradient(135deg, var(--accent), #f2d28f);
+        }
+
+        .theme-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle.light::after {
+            left: calc(100% - 26px);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .feature-item {
+            background: rgba(214, 167, 79, 0.1);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            color: var(--accent);
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .feature-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent), #c18b2f);
+            color: #0b0b0f;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(214, 167, 79, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .accessibility-page {
+                padding: 20px 16px;
+            }
+
+            .accessibility-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .accessibility-header h1 {
+                font-size: 24px;
+            }
+
+            .section-card {
+                padding: 20px;
+            }
+
+            .toggle-container {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo">
+            <span class="logo-icon">B5</span>
+            <span class="logo-text">Big5hats</span>
+        </div>
+
+        <nav class="navbar">
+            <a href="index.html">Inicio</a>
+            <a href="categorias.html">Categorías</a>
+            <a href="nosotros.html">Nosotros</a>
+            <a href="contacto.html">Contáctanos</a>
+        </nav>
+
+        <button class="accessibility-btn" title="Opciones de accesibilidad" aria-label="Abrir opciones de accesibilidad">
+            <i class="fas fa-universal-access accessibility-icon" aria-hidden="true"></i>
+            <span class="label">Accesibilidad</span>
+        </button>
+
+        <a class="pill-button" href="login.html">Entrar</a>
+    </header>
+
+    <main class="accessibility-page">
+        <div class="accessibility-header">
+            <h1>
+                <i class="fas fa-universal-access"></i>
+                Accesibilidad
+            </h1>
+            <a href="javascript:history.back()" title="Volver" aria-label="Volver a la página anterior">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+
+        <!-- Modo Claro/Oscuro -->
+        <section class="section-card">
+            <h3>
+                <i class="fas fa-eye"></i>
+                Modo de Contraste
+            </h3>
+            <p>Elige entre modo oscuro y claro para optimizar tu experiencia de navegación según tu preferencia visual.</p>
+            
+            <div class="toggle-container">
+                <label class="toggle-label" for="themeToggle">
+                    <i class="fas fa-moon"></i>
+                    <span id="themeLabel">Modo Oscuro</span>
+                </label>
+                <div class="theme-toggle" id="themeToggle" role="switch" aria-checked="false" aria-label="Cambiar entre modo claro y oscuro">
+                </div>
+            </div>
+        </section>
+
+        <!-- Control de tamaño de texto -->
+        <section class="section-card">
+            <h3>
+                <i class="fas fa-text-height"></i>
+                Control de Tamaño de Texto
+            </h3>
+            <p>Ajusta el tamaño de las fuentes para títulos, párrafos y botones. La preferencia se guardará en tu navegador.</p>
+
+            <div class="toggle-container" style="align-items:center;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <button id="decreaseText" class="btn" aria-label="Disminuir tamaño de texto">A-</button>
+                    <button id="resetText" class="btn" aria-label="Tamaño de texto por defecto">A</button>
+                    <button id="increaseText" class="btn" aria-label="Aumentar tamaño de texto">A+</button>
+                </div>
+                <div style="text-align:right;">
+                    <div id="currentTextScale" style="font-weight:700;">Tamaño: Normal</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Información de Accesibilidad -->
+        <section class="section-card">
+            <h3>
+                <i class="fas fa-info-circle"></i>
+                Características de Accesibilidad
+            </h3>
+            <p>Nuestro sitio está diseñado para ser accesible para todos los usuarios, incluyendo aquellos con discapacidades.</p>
+            
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-keyboard"></i></div>
+                    <div class="feature-text">Navegación completa por teclado</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-volume-up"></i></div>
+                    <div class="feature-text">Compatible con lectores de pantalla</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-text-height"></i></div>
+                    <div class="feature-text">Textos redimensionables</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-link"></i></div>
+                    <div class="feature-text">Enlaces descriptivos</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="feature-text">Cumple WCAG 2.1 AA</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-palette"></i></div>
+                    <div class="feature-text">Contraste suficiente en colores</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacto -->
+        <section class="section-card">
+            <h3>
+                <i class="fas fa-headset"></i>
+                ¿Necesitas Ayuda?
+            </h3>
+            <p>Si encuentras algún problema de accesibilidad en nuestro sitio, por favor <a href="contacto.html" style="color: var(--accent); text-decoration: underline;">contáctanos</a> para que podamos ayudarte.</p>
+        </section>
+
+        <div style="margin-top: 40px;">
+            <a href="javascript:history.back()" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Volver
+            </a>
+        </div>
+    </main>
+
+    <script src="js/accessibility.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Funcionalidad del selector de tema
+        const themeToggle = document.getElementById('themeToggle');
+        const themeLabel = document.getElementById('themeLabel');
+        const html = document.documentElement;
+        const body = document.body;
+
+        // Cargar preferencia guardada o usar preferencia del sistema
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
+
+        themeToggle.addEventListener('click', function() {
+            const newTheme = html.classList.contains('light-mode') ? 'dark' : 'light';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+            // if the user is logged in, persist preference to server
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch(`${window.API_BASE || 'http://localhost:4700/api'}/auth/me/preferences`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ theme: newTheme, textSize: localStorage.getItem('textSize') || null })
+                }).catch(err => console.warn('No se pudieron guardar preferencias de tema', err));
+            }
+        });
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                html.classList.add('light-mode');
+                body.classList.add('light-mode');
+                themeToggle.classList.add('light');
+                themeLabel.textContent = 'Modo Claro';
+                themeToggle.setAttribute('aria-checked', 'true');
+            } else {
+                html.classList.remove('light-mode');
+                body.classList.remove('light-mode');
+                themeToggle.classList.remove('light');
+                themeLabel.textContent = 'Modo Oscuro';
+                themeToggle.setAttribute('aria-checked', 'false');
+            }
+        }
+
+        // Aplicar el tema a la página anterior al volver
+        window.addEventListener('pageshow', function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            applyTheme(theme);
+        });
+
+        // --- Control de tamaño de texto ---
+        const decreaseBtn = document.getElementById('decreaseText');
+        const increaseBtn = document.getElementById('increaseText');
+        const resetBtn = document.getElementById('resetText');
+        const currentLabel = document.getElementById('currentTextScale');
+
+        // Load saved text size: 'small' | 'normal' | 'large'
+        const savedTextSize = localStorage.getItem('textSize') || 'normal';
+        applyTextSize(savedTextSize);
+
+        decreaseBtn.addEventListener('click', () => {
+            applyTextSize('small');
+            localStorage.setItem('textSize', 'small');
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch(`${window.API_BASE || 'http://localhost:4700/api'}/auth/me/preferences`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ textSize: 'small', theme: localStorage.getItem('theme') || null })
+                }).catch(err => console.warn('No se pudieron guardar preferencias de tamaño', err));
+            }
+        });
+
+        increaseBtn.addEventListener('click', () => {
+            applyTextSize('large');
+            localStorage.setItem('textSize', 'large');
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch(`${window.API_BASE || 'http://localhost:4700/api'}/auth/me/preferences`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ textSize: 'large', theme: localStorage.getItem('theme') || null })
+                }).catch(err => console.warn('No se pudieron guardar preferencias de tamaño', err));
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            applyTextSize('normal');
+            localStorage.setItem('textSize', 'normal');
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch(`${window.API_BASE || 'http://localhost:4700/api'}/auth/me/preferences`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ textSize: 'normal', theme: localStorage.getItem('theme') || null })
+                }).catch(err => console.warn('No se pudieron guardar preferencias de tamaño', err));
+            }
+        });
+
+        // Sync across tabs when storage changes
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'textSize') {
+                applyTextSize(e.newValue || 'normal');
+            }
+        });
+
+        function applyTextSize(size) {
+            html.classList.remove('text-size-small', 'text-size-large');
+            if (size === 'small') {
+                html.classList.add('text-size-small');
+                currentLabel.textContent = 'Tamaño: Pequeño';
+            } else if (size === 'large') {
+                html.classList.add('text-size-large');
+                currentLabel.textContent = 'Tamaño: Grande';
+            } else {
+                currentLabel.textContent = 'Tamaño: Normal';
+            }
+        }
+    </script>
+</body>
+</html>

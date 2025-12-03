@@ -89,8 +89,39 @@ document.addEventListener("DOMContentLoaded", () => {
           if (data.role) localStorage.setItem("role", data.role);
           if (data.nombre) localStorage.setItem("userNombre", data.nombre);
           if (data.correo) localStorage.setItem("userCorreo", data.correo);
-          showLoginStatus("Login exitoso. Redirigiendo...", "success");
+          showLoginStatus("Login exitoso. Cargando preferencias...", "success");
           showToast();
+          // Cargar preferencias del usuario desde el backend y aplicarlas
+          try {
+            const token = data.token;
+            const prefsRes = await fetch(`${API_BASE_AUTH}/auth/me/preferences`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (prefsRes.ok) {
+              const prefsData = await prefsRes.json();
+              const p = prefsData?.preferences || {};
+              const themeToApply = p.theme || 'dark';
+              const textSizeToApply = p.textSize || 'normal';
+              // Overwrite local values to avoid leaking previous user's prefs
+              localStorage.setItem('theme', themeToApply);
+              localStorage.setItem('textSize', textSizeToApply);
+              if (typeof applyThemeGlobally === 'function') applyThemeGlobally(themeToApply);
+              if (typeof applyTextSizeGlobally === 'function') applyTextSizeGlobally(textSizeToApply);
+            } else {
+              // Enforce defaults if server did not return preferences
+              localStorage.setItem('theme', 'dark');
+              localStorage.setItem('textSize', 'normal');
+              if (typeof applyThemeGlobally === 'function') applyThemeGlobally('dark');
+              if (typeof applyTextSizeGlobally === 'function') applyTextSizeGlobally('normal');
+            }
+          } catch (err) {
+            console.warn('No se pudieron cargar preferencias del servidor', err);
+            // Apply defaults on error
+            localStorage.setItem('theme', 'dark');
+            localStorage.setItem('textSize', 'normal');
+            if (typeof applyThemeGlobally === 'function') applyThemeGlobally('dark');
+            if (typeof applyTextSizeGlobally === 'function') applyTextSizeGlobally('normal');
+          }
           setTimeout(() => window.location.href = "index.html", 600);
         } else {
           showLoginStatus(data.mensaje || "Error al iniciar sesión", "error");
