@@ -287,20 +287,28 @@
     modal.id = 'purchaseModal';
     modal.className = 'auth-modal';
     modal.innerHTML = `<div class="auth-modal-box" role="dialog" aria-modal="true" style="max-width:640px;">
-      <div style="display:flex; flex-direction:column; gap:12px; color:#0b0c10; background:linear-gradient(180deg,#fff,#f7f5f0); padding:18px; border-radius:12px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;"><h3 style="margin:0;">Pago</h3><button id="closeModal" class="btn ghost">Cerrar</button></div>
+        <div style="display:flex; flex-direction:column; gap:12px; color:#0b0c10; background:linear-gradient(180deg,#fff,#f7f5f0); padding:18px; border-radius:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;"><h3 style="margin:0;">Pago</h3><button id="closeModal" class="btn ghost" style="color:#0b0c10;border-color:#0b0c10;">Cerrar</button></div>
         <div id="modalContent" style="background:transparent;"></div>
       </div>
     </div>`;
     document.body.appendChild(modal);
     document.getElementById('closeModal').addEventListener('click', hideModal);
+    modal.addEventListener('click', (ev) => {
+      if (ev.target === modal) hideModal();
+    });
   }
 
   function showModal(html) {
     createModal();
     const modal = document.getElementById('purchaseModal');
     const content = document.getElementById('modalContent');
-    if (content) content.innerHTML = html;
+    if (content) {
+      content.innerHTML = html;
+      content.querySelectorAll('[data-close-modal]').forEach((btn) =>
+        btn.addEventListener('click', hideModal)
+      );
+    }
     modal.classList.add('show');
     modal.style.pointerEvents = 'all';
   }

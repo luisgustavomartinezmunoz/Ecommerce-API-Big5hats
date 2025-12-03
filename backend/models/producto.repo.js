@@ -84,12 +84,19 @@ export async function listProductos(filters = {}) {
   );
   const total = countRows?.[0]?.total || 0;
 
-  return { data: rows, meta: { total, page: pageNum, limit: limitNum } };
+  const data = (rows || []).map((p) => ({
+    ...p,
+    disponible: !!p.disponible && Number(p.stock) > 0,
+  }));
+
+  return { data, meta: { total, page: pageNum, limit: limitNum } };
 }
 
 export async function getProducto(id) {
   const [rows] = await pool.execute(`${baseSelect} WHERE p.id = ?`, [id]);
-  return rows[0] || null;
+  const row = rows[0] || null;
+  if (!row) return null;
+  return { ...row, disponible: !!row.disponible && Number(row.stock) > 0 };
 }
 
 export async function createProducto(payload) {
@@ -104,6 +111,9 @@ export async function createProducto(payload) {
     oferta = false,
   } = payload;
 
+  const stockNum = Number(stock || 0);
+  const disponibleFlag = stockNum > 0 && disponible ? 1 : 0;
+
   const [result] = await pool.execute(
     `INSERT INTO productos
       (nombre, descripcion, precio, categoria_slug, imagen, disponible, stock, oferta)
@@ -114,8 +124,8 @@ export async function createProducto(payload) {
       Number(precio),
       categoria.toLowerCase(),
       imagen,
-      disponible ? 1 : 0,
-      Number(stock || 0),
+      disponibleFlag,
+      stockNum,
       oferta ? 1 : 0,
     ]
   );
@@ -128,6 +138,9 @@ export async function updateProducto(id, payload) {
   const params = [];
 
   const allowed = ["nombre", "descripcion", "precio", "categoria", "imagen", "disponible", "stock", "oferta"];
+  let autoDisable = false;
+  if (payload.stock !== undefined && Number(payload.stock) <= 0) autoDisable = true;
+
   for (const key of allowed) {
     if (payload[key] === undefined) continue;
     if (key === "categoria") {
@@ -142,6 +155,10 @@ export async function updateProducto(id, payload) {
       key === "stock" ? Number(payload[key]) :
       payload[key]
     );
+  }
+
+  if (autoDisable && !fields.some((f) => f.startsWith("disponible"))) {
+    fields.push("disponible = 0");
   }
 
   if (!fields.length) return await getProducto(id);

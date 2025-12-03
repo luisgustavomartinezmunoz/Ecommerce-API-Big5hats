@@ -92,11 +92,20 @@ function renderProductoCard(producto) {
   const btn = document.createElement("button");
   btn.className = "btn";
   btn.textContent = producto.disponible ? "Agregar al carrito" : "No disponible";
-  btn.disabled = !producto.disponible;
+  // Permitimos clic aunque no haya stock para mostrar alerta amigable
+  btn.disabled = false;
+  if (!producto.disponible) {
+    btn.classList.add("ghost");
+    btn.style.opacity = "0.65";
+  }
   // Evitar que el click en el botón navegue al detalle y agregar al carrito en sitio
   btn.addEventListener('click', (ev) => {
     ev.preventDefault();
     ev.stopPropagation();
+    if (!producto.disponible || Number(producto.stock || 0) <= 0) {
+      if (typeof window.showNotice === 'function') window.showNotice('Por el momento este producto no está disponible', 'error');
+      return;
+    }
     const token = localStorage.getItem('token');
     if (!token) {
       if (typeof window.showNotice === 'function') window.showNotice('Debes iniciar sesión para añadir productos al carrito.', 'error');
