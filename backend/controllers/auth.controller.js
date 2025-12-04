@@ -1,3 +1,4 @@
+
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import {
@@ -12,6 +13,8 @@ import { verificarCaptcha } from "../utils/generarCaptcha.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "big5hats_secret";
 const resetTokens = new Map(); // correo -> { token, exp }
+const MAX_INTENTOS_FALLIDOS = 3;
+const BLOQUEO_MINUTOS = 5;
 
 function generarCodigoReset(size = 6) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -26,12 +29,12 @@ export const registro = async (req, res) => {
   try {
     const { nombre, correo, contrasena } = req.body || {};
     if (!nombre || !correo || !contrasena) {
-      return res.status(400).json({ mensaje: "Nombre, correo y contraseña son requeridos" });
+      return res.status(400).json({ mensaje: "Nombre, correo y contraseA?a son requeridos" });
     }
 
     const existe = await findUserByEmail(correo);
     if (existe) {
-      return res.status(400).json({ mensaje: "El correo ya está registrado" });
+      return res.status(400).json({ mensaje: "El correo ya estA? registrado" });
     }
 
     const hash = await bcrypt.hash(contrasena, 10);
@@ -51,7 +54,7 @@ export const solicitarReset = async (req, res) => {
 
     const user = await findUserByEmail(correo);
     if (!user) {
-      // No revelamos si existe; respondemos genérico
+      // No revelamos si existe; respondemos genAcrico
       return res.status(200).json({ mensaje: "Si el correo existe, se ha enviado un cA3digo de recuperaciA3n" });
     }
 
@@ -74,27 +77,27 @@ export const restablecerPassword = async (req, res) => {
   try {
     const { correo, token, nuevaContrasena } = req.body || {};
     if (!correo || !token || !nuevaContrasena) {
-      return res.status(400).json({ mensaje: "Correo, token y nueva contraseA�a son requeridos" });
+      return res.status(400).json({ mensaje: "Correo, token y nueva contraseA???a son requeridos" });
     }
     if (nuevaContrasena.length < 8) {
-      return res.status(400).json({ mensaje: "La contraseA�a debe tener al menos 8 caracteres" });
+      return res.status(400).json({ mensaje: "La contraseA???a debe tener al menos 8 caracteres" });
     }
 
     const user = await findUserByEmail(correo);
-    if (!user) return res.status(400).json({ mensaje: "Token o correo invA�lidos" });
+    if (!user) return res.status(400).json({ mensaje: "Token o correo invA???lidos" });
 
     const info = resetTokens.get(correo);
     if (!info || info.token !== token || info.exp < Date.now()) {
-      return res.status(400).json({ mensaje: "Token invA�lido o vencido" });
+      return res.status(400).json({ mensaje: "Token invA???lido o vencido" });
     }
 
     const hash = await bcrypt.hash(nuevaContrasena, 10);
     await updatePassword(user.id, hash);
     resetTokens.delete(correo);
-    return res.status(200).json({ mensaje: "ContraseA�a actualizada, ahora puedes iniciar sesiA3n" });
+    return res.status(200).json({ mensaje: "ContraseA???a actualizada, ahora puedes iniciar sesiA3n" });
   } catch (err) {
     console.error("restablecerPassword error", err);
-    return res.status(500).json({ mensaje: "Error al restablecer contraseA�a" });
+    return res.status(500).json({ mensaje: "Error al restablecer contraseA???a" });
   }
 };
 
@@ -102,31 +105,49 @@ export const login = async (req, res) => {
   try {
     const { correo, contrasena, captchaId, captchaTexto } = req.body || {};
     if (!correo || !contrasena || !captchaId || !captchaTexto) {
-      return res.status(400).json({ mensaje: "Correo, contraseña y CAPTCHA son requeridos" });
+      return res.status(400).json({ mensaje: "Correo, contraseA?a y CAPTCHA son requeridos" });
     }
 
     const cap = verificarCaptcha(captchaId, captchaTexto);
     if (!cap.valido) {
-      return res.status(400).json({ mensaje: cap.mensaje || "CAPTCHA inválido" });
+      return res.status(400).json({ mensaje: cap.mensaje || "CAPTCHA invA?lido" });
     }
 
     const usuario = await findUserByEmail(correo);
     if (!usuario) {
-      return res.status(401).json({ mensaje: "Credenciales inválidas" });
+      return res.status(401).json({ mensaje: "Credenciales invA?lidas" });
     }
 
-    if (usuario.lock_until && new Date(usuario.lock_until) > new Date()) {
-      const segundos = Math.ceil((new Date(usuario.lock_until) - new Date()) / 1000);
-      return res.status(403).json({ mensaje: `Cuenta bloqueada. Intenta en ${segundos} segundos.` });
+    if (usuario.lock_until) {
+      const lockDate = new Date(usuario.lock_until);
+      if (lockDate > new Date()) {
+        const segundos = Math.ceil((lockDate - new Date()) / 1000);
+        return res.status(403).json({
+          mensaje: `Cuenta bloqueada. Intenta en ${segundos} segundos.`,
+          bloqueado: true,
+          lockUntil: lockDate.toISOString(),
+          restanteSegundos: segundos,
+        });
+      } else {
+        await resetLockAndAttempts(usuario.id);
+      }
     }
 
     const valido = await bcrypt.compare(contrasena, usuario.contrasena);
     if (!valido) {
-      const lockInfo = await registerFailedAttempt(usuario.id);
+      const lockInfo = await registerFailedAttempt(usuario.id, MAX_INTENTOS_FALLIDOS, BLOQUEO_MINUTOS);
       if (lockInfo.locked) {
-        return res.status(403).json({ mensaje: "Cuenta bloqueada por demasiados intentos. Intenta de nuevo en 5 minutos." });
+        return res.status(403).json({
+          mensaje: "Cuenta bloqueada por demasiados intentos. Intenta de nuevo en 5 minutos.",
+          bloqueado: true,
+          lockUntil: lockInfo.lockUntil?.toISOString?.(),
+          restanteSegundos: BLOQUEO_MINUTOS * 60,
+        });
       }
-      return res.status(401).json({ mensaje: "Credenciales inválidas" });
+      return res.status(401).json({
+        mensaje: "Credenciales invA?lidas",
+        intentosRestantes: lockInfo.remaining,
+      });
     }
 
     await resetLockAndAttempts(usuario.id);
@@ -136,7 +157,7 @@ export const login = async (req, res) => {
     return res.json({ mensaje: "Login exitoso", token, role: usuario.role, nombre: usuario.nombre, correo: usuario.correo });
   } catch (err) {
     console.error("login error", err);
-    return res.status(500).json({ mensaje: "Error al iniciar sesión" });
+    return res.status(500).json({ mensaje: "Error al iniciar sesiA3n" });
   }
 };
 

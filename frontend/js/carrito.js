@@ -410,6 +410,9 @@
         <div>
           <h4 style="margin-top:0;">Compra confirmada</h4>
           <p class="muted">Orden #${orden.ordenId || orden.id || 'N/D'} generada correctamente.</p>
+          <div class="auth-status success" style="margin:8px 0;">${(data.messages && data.messages.compra) || 'Compra finalizada'}</div>
+          <div class="auth-status ${data.notaEnviada ? 'success' : 'warning'}" style="margin:4px 0;">${(data.messages && data.messages.correo) || (data.notaEnviada ? 'La nota se envio a tu correo electronico' : 'No pudimos enviar la nota por correo')}</div>
+          <p class="muted" style="margin:6px 0;">PDF enviado a: ${data.correoDestino || 'tu correo registrado'}</p>
           <div style="margin-top:12px; border-top:1px solid var(--border); padding-top:10px;">
             ${itemsHtml}
             <div style="display:flex; justify-content:space-between; margin-top:8px;"><strong>Subtotal</strong><div>${currency(totalsFromApi.subtotal)}</div></div>
@@ -422,8 +425,14 @@
         </div>
       `;
 
+        if (typeof window.showNotice === 'function') {
+          const compraMsg = data?.messages?.compra || 'Compra finalizada';
+          const correoMsg = data?.messages?.correo || (data?.notaEnviada ? 'La nota se envio a tu correo electronico' : 'No pudimos enviar la nota por correo');
+          window.showNotice(compraMsg, 'success');
+          window.showNotice(correoMsg, data?.notaEnviada ? 'success' : 'error');
+        }
+
         showModal(html);
-        if (typeof window.showNotice === 'function') window.showNotice('Pago realizado y orden creada.', 'success');
         // Vaciar carrito tras pago
         writeCart([]);
         renderCartItems();
