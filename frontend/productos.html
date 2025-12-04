@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Productos · Big5hats</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -15,10 +16,15 @@
 
     <nav class="navbar">
       <a href="index.html">Inicio</a>
-      <a href="categorias.html">Categorías</a>
+      <a href="categorias.html">Categorias</a>
       <a href="nosotros.html">Nosotros</a>
-      <a href="contacto.html">Contáctanos</a>
+      <a href="contacto.html">Contactanos</a>
     </nav>
+
+        <button class="accessibility-btn" title="Opciones de accesibilidad" aria-label="Abrir opciones de accesibilidad">
+          <i class="fas fa-universal-access accessibility-icon" aria-hidden="true"></i>
+          <span class="label">Accesibilidad</span>
+        </button>
 
     <a class="pill-button" href="login.html">Entrar</a>
   </header>
@@ -26,39 +32,48 @@
   <main>
     <section class="page">
       <div class="section-header">
-        <p class="section-kicker">Catálogo</p>
+        <p class="section-kicker">Catalogo</p>
         <h2 id="catalogTitle">Todos los productos</h2>
-        <p class="section-subtext">Explora los productos disponibles. Usa los enlaces desde las categorías o filtra por URL con <code>?categoria=nombre</code>.</p>
+        <p class="section-subtext">Usa los filtros por categoria, rango de precio y productos en oferta.</p>
+      </div>
+
+      <div class="filters-bar">
+        <div class="filter">
+          <label for="fCategoria">Categoria</label>
+          <select id="fCategoria">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div class="filter range">
+          <label for="fMin">Precio min</label>
+          <input type="number" id="fMin" placeholder="0" min="0" step="10">
+        </div>
+        <div class="filter range">
+          <label for="fMax">Precio max</label>
+          <input type="number" id="fMax" placeholder="1000" min="0" step="10">
+        </div>
+        <div class="filter check">
+          <label for="fOferta">
+            <input type="checkbox" id="fOferta"> Solo oferta
+          </label>
+        </div>
+        <div class="filter">
+          <label for="fSort">Ordenar</label>
+          <select id="fSort">
+            <option value="created_at">Relevancia</option>
+            <option value="price-asc">Precio (menor)</option>
+            <option value="price-desc">Precio (mayor)</option>
+            <option value="name">Nombre</option>
+          </select>
+        </div>
+        <button id="btnAplicarFiltros" class="btn">Aplicar</button>
       </div>
 
       <div class="products-container">
-        <div class="sort-dropdown-wrapper">
-          <label for="sortSelect" style="color:var(--muted);font-weight:700;font-size:14px;">Ordenar:</label>
-          <div class="custom-select-wrapper">
-            <button id="sortSelect" class="custom-select-button" aria-haspopup="listbox">
-              <span id="sortLabel">Relevancia</span>
-              <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
-                <path d="M6 8L0 0h12z" fill="currentColor"/>
-              </svg>
-            </button>
-            <ul id="sortOptions" class="custom-select-options" role="listbox" hidden>
-              <li class="custom-option" data-value="default" role="option">Relevancia</li>
-              <li class="custom-option" data-value="price-asc" role="option">Precio ↑</li>
-              <li class="custom-option" data-value="price-desc" role="option">Precio ↓</li>
-            </ul>
-          </div>
-          <select id="sortSelectHidden" class="sort-select" style="display:none;">
-            <option value="default">Relevancia</option>
-            <option value="price-asc">Precio ↑</option>
-            <option value="price-desc">Precio ↓</option>
-          </select>
-        </div>
-
         <div class="producto-grid" id="productoGrid">
-          <!-- Productos cargados dinámicamente desde API -->
+          <p class="muted">Cargando productos...</p>
         </div>
       </div>
-
     </section>
   </main>
 
@@ -68,16 +83,16 @@
         <span class="logo-icon">B5</span>
         <span>Big5hats</span>
       </div>
-      <p class="footer-note">Estilo que te distingue. Gorras pensadas para tu día a día con un toque premium.</p>
-      <p class="footer-note">Proyecto académico de la Universidad Autónoma de Aguascalientes.</p>
-      <p class="footer-copy">© 2025 Big5hats. Todos los derechos reservados.</p>
+      <p class="footer-note">Estilo que te distingue. Gorras pensadas para tu dia a dia con un toque premium.</p>
+      <p class="footer-note">Proyecto academico de la Universidad Autonoma de Aguascalientes.</p>
+      <p class="footer-copy">&copy; 2025 Big5hats. Todos los derechos reservados.</p>
     </div>
     <div class="footer-nav">
       <strong>Explora</strong>
       <a href="index.html">Inicio</a>
-      <a href="categorias.html">Categorías</a>
+      <a href="categorias.html">Categorias</a>
       <a href="nosotros.html">Nosotros</a>
-      <a href="contacto.html">Contáctanos</a>
+      <a href="contacto.html">Contactanos</a>
     </div>
     <div class="footer-nav">
       <strong>Ayuda</strong>
@@ -90,83 +105,8 @@
     </div>
   </footer>
 
+  <script src="js/accessibility.js"></script>
+  <script src="js/app.js"></script>
   <script src="js/productos.js"></script>
-  <script>
-    // Custom select dropdown
-    (function(){
-      const button = document.getElementById('sortSelect');
-      const options = document.getElementById('sortOptions');
-      const customOptions = document.querySelectorAll('.custom-option');
-      const hiddenSelect = document.getElementById('sortSelectHidden');
-      const label = document.getElementById('sortLabel');
-      
-      button.addEventListener('click', () => {
-        const isOpen = !options.hidden;
-        options.hidden = isOpen;
-        button.setAttribute('aria-expanded', !isOpen);
-      });
-      
-      customOptions.forEach(opt => {
-        opt.addEventListener('click', () => {
-          const value = opt.getAttribute('data-value');
-          label.textContent = opt.textContent;
-          hiddenSelect.value = value;
-          
-          // Update selection state
-          customOptions.forEach(o => o.removeAttribute('aria-selected'));
-          opt.setAttribute('aria-selected', 'true');
-          
-          // Close dropdown
-          options.hidden = true;
-          button.setAttribute('aria-expanded', 'false');
-          button.focus();
-        });
-      });
-      
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!button.contains(e.target) && !options.contains(e.target)) {
-          options.hidden = true;
-          button.setAttribute('aria-expanded', 'false');
-        }
-      });
-      
-      // Keyboard navigation
-      button.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          options.hidden = !options.hidden;
-          button.setAttribute('aria-expanded', !options.hidden);
-        }
-      });
-    })();
-
-    // Mostrar categoría desde ?categoria=...
-    (function(){
-      const params = new URLSearchParams(location.search);
-      const cat = params.get('categoria');
-      const title = document.getElementById('catalogTitle');
-      if(cat){
-        // decodificar y capitalizar
-        title.textContent = 'Categoría: ' + decodeURIComponent(cat).replace(/(^|\s)\S/g, s => s.toUpperCase());
-        // ocultar tarjetas que no coincidan
-        document.querySelectorAll('.producto-card').forEach(card => {
-          const c = card.getAttribute('data-category');
-          if(c && c.toLowerCase() !== cat.toLowerCase()) card.style.display = 'none';
-        });
-      }
-
-      // Reemplazar placeholders por <img> con data-src si el recurso está disponible en servidor
-      document.querySelectorAll('.producto-media').forEach(node => {
-        const src = node.getAttribute('data-src');
-        if(!src) return;
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = node.getAttribute('aria-label') || '';
-        img.onload = () => { node.innerHTML = ''; node.appendChild(img); };
-        img.onerror = () => { /* deja el placeholder */ };
-      });
-    })();
-  </script>
 </body>
 </html>
