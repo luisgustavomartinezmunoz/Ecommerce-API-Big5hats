@@ -45,7 +45,7 @@ export async function resetLockAndAttempts(id) {
   }
 }
 
-export async function registerFailedAttempt(id, maxAttempts = 5, lockMinutes = 5) {
+export async function registerFailedAttempt(id, maxAttempts = 3, lockMinutes = 5) {
   try {
     const [rows] = await pool.execute(
       "SELECT failed_attempts FROM usuarios WHERE id = ?",
@@ -53,23 +53,24 @@ export async function registerFailedAttempt(id, maxAttempts = 5, lockMinutes = 5
     );
     const current = rows?.[0]?.failed_attempts || 0;
     const next = current + 1;
+    const remaining = Math.max(0, maxAttempts - next);
     if (next >= maxAttempts) {
       const lockUntil = new Date(Date.now() + lockMinutes * 60 * 1000);
       await pool.execute(
         "UPDATE usuarios SET failed_attempts = ?, lock_until = ? WHERE id = ?",
         [next, lockUntil, id]
       );
-      return { locked: true, lockUntil };
+      return { locked: true, lockUntil, remaining: 0 };
     } else {
       await pool.execute(
         "UPDATE usuarios SET failed_attempts = ? WHERE id = ?",
         [next, id]
       );
-      return { locked: false };
+      return { locked: false, remaining };
     }
   } catch (err) {
     // Si no existen columnas, no bloqueamos
-    return { locked: false };
+    return { locked: false, remaining: maxAttempts - 1 };
   }
 }
 
