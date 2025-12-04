@@ -1,4 +1,4 @@
-import { pool } from "../config/db.js";
+import { pool } from "../db.js";
 import { getProducto } from "../models/producto.repo.js";
 
 export async function listarWishlist(req, res) {

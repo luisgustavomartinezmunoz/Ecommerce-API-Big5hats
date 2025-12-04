@@ -1,4 +1,4 @@
-import { pool } from "../config/db.js";
+import { pool } from "../db.js";
 
 const buildError = (status, mensaje) => {
   const err = new Error(mensaje);
