@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import { testConnection, pool } from "./config/db.js";
+import { testConnection } from "./db.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import captchaRoutes from "./routes/captcha.routes.js";
@@ -43,15 +43,6 @@ app.use("/api/reportes", reportesRoutes);
 
 // Rutas protegidas API (puedes reactivar auth cuando conectes login)
 app.use("/api/carrito", verificarToken, carritoRoutes);
-
-app.get("/api/health", async (req, res) => {
-  try {
-    await pool.query("SELECT 1");
-    res.json({ ok: true, msg: "Conectado a Railway" });
-  } catch (err) {
-    res.status(500).json({ ok: false, error: err.message });
-  }
-});
 
 // Fallback: devolver index.html para rutas frontend
 app.get("*", (req, res) => {
