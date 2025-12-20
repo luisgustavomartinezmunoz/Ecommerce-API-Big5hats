@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin - Big5hats</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo">
+      <span class="logo-icon">B5</span>
+      <span class="logo-text">Big5hats</span>
+    </div>
+
+    <nav class="navbar">
+      <a href="index.html">Inicio</a>
+      <a href="categorias.html">Categor&iacute;as</a>
+      <a href="productos.html">Productos</a>
+      <a href="contacto.html">Contacto</a>
+      <a class="active" href="admin.html">Admin</a>
+    </nav>
+
+    <button class="accessibility-btn" title="Opciones de accesibilidad" aria-label="Abrir opciones de accesibilidad">
+      <i class="fas fa-universal-access accessibility-icon" aria-hidden="true"></i>
+      <span class="label">Accesibilidad</span>
+    </button>
+
+    <a class="pill-button" href="login.html">Entrar</a>
+  </header>
+
+  <main class="admin-wrapper">
+    <div id="unauthorized" class="section-card alert" style="display:none;">
+      <strong>No autorizado.</strong> Este panel es solo para administradores. Inicia sesi&oacute;n con una cuenta admin o regresa a la tienda.
+      <div class="actions" style="margin-top:10px;">
+        <a class="btn ghost small" href="index.html">Volver a tienda</a>
+        <a class="btn primary small" href="login.html">Ir a login</a>
+      </div>
+    </div>
+
+    <section id="adminContent" style="display:none; flex-direction:column; gap:14px;">
+      <div class="page-title">
+        <div>
+          <p class="mini-title">Panel de control</p>
+          <h1>Administraci&oacute;n Big5hats</h1>
+        </div>
+        <div class="badge">
+          <span>Usuario admin:</span>
+          <strong id="adminUserName">-</strong>
+        </div>
+        <button class="btn primary small" id="btnRefrescarTodo">Refrescar todo</button>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <h4>Total de ventas acumuladas</h4>
+          <div class="kpi-value" id="totalVentasMonto">$0.00 MXN</div>
+          <small>Se actualiza al refrescar los datos</small>
+        </div>
+        <div class="kpi">
+          <h4>Productos activos</h4>
+          <div class="kpi-value" id="productosActivos">0</div>
+          <small>Productos disponibles en la tienda</small>
+        </div>
+      </div>
+
+      <section class="section-card">
+        <div class="panel-header">
+          <div>
+            <p class="mini-title">Inventario y cat&aacute;logo</p>
+            <h3>Gesti&oacute;n de productos</h3>
+          </div>
+          <div class="actions">
+            <button class="btn ghost small" id="btnRefrescarProductos">Refrescar</button>
+            <button class="btn primary small" id="btnAgregarProducto">Agregar producto</button>
+          </div>
+        </div>
+        <p class="muted">Revisa, edita y elimina productos. Todos los cambios refrescan la tabla sin recargar la p&aacute;gina.</p>
+        <div class="table-wrapper">
+          <table class="table" id="tablaProductos">
+            <thead>
+              <tr>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Descripci&oacute;n</th>
+                <th>Precio</th>
+                <th>Categor&iacute;a</th>
+                <th>Stock</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="productosBody">
+              <tr><td colspan="8" class="muted">Cargando productos...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="grid-2">
+        <section class="section-card">
+          <div class="panel-header">
+            <div>
+              <p class="mini-title">Ventas</p>
+              <h3>Gr&aacute;fica por categor&iacute;a</h3>
+            </div>
+            <button class="btn ghost small" id="btnRefrescarVentas">Actualizar</button>
+          </div>
+          <p class="muted">Consulta el antes y despu&eacute;s de una venta volviendo a pedir los datos a la API.</p>
+          <div id="chartCategorias" class="chart">
+            <p class="muted">Sin datos a&uacute;n.</p>
+          </div>
+        </section>
+
+        <section class="section-card">
+          <div class="panel-header">
+            <div>
+              <p class="mini-title">Inventario</p>
+              <h3>Reporte de existencias</h3>
+            </div>
+            <div class="filter-row">
+              <label class="muted" for="filtroInventario">Filtrar por categor&iacute;a</label>
+              <select id="filtroInventario"></select>
+              <button class="btn ghost small" id="btnRefrescarInventario">Refrescar</button>
+            </div>
+          </div>
+          <p class="muted">Resaltamos existencias en cero o bajas.</p>
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Categor&iacute;a</th>
+                  <th>Existencia</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="inventarioBody">
+                <tr><td colspan="4" class="muted">Cargando inventario...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <div class="panel-header">
+        <h3 id="formTitle">Nuevo producto</h3>
+        <button class="btn ghost small" type="button" id="btnCerrarModal">Cerrar</button>
+      </div>
+      <form id="productForm">
+        <div class="form-grid">
+          <label>Nombre
+            <input type="text" id="nombreProducto" required>
+          </label>
+          <label>Precio
+            <input type="number" min="0" step="0.01" id="precioProducto" required>
+          </label>
+          <label>Categor&iacute;a
+            <select id="categoriaProducto" required></select>
+          </label>
+          <label>Stock
+            <input type="number" min="0" id="stockProducto" required>
+          </label>
+          <label>Imagen (URL o ruta)
+            <input type="text" id="imagenProducto" placeholder="img/archivo.jpg">
+          </label>
+          <label>Descripci&oacute;n
+            <textarea id="descripcionProducto" rows="3"></textarea>
+          </label>
+          <label>
+            <input type="checkbox" id="disponibleProducto" checked>
+            Disponible
+          </label>
+          <label>
+            <input type="checkbox" id="ofertaProducto">
+            En oferta
+          </label>
+        </div>
+        <div class="form-footer">
+          <button class="btn ghost" type="button" id="btnCancelar">Cancelar</button>
+          <button class="btn primary" type="submit" id="btnGuardarProducto">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/accessibility.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
